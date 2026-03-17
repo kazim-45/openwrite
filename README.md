@@ -1,4 +1,3 @@
-[README (1).md](https://github.com/user-attachments/files/26065362/README.1.md)
 # FADE IN
 
 **Professional screenwriting software. Free. Open source. Runs in your browser.**
