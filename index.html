@@ -86,8 +86,8 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--text
 .sidebar{display:flex;flex-direction:column;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1),min-width .22s cubic-bezier(.4,0,.2,1),background .25s;background:var(--surface);border-color:var(--border);position:relative;flex-shrink:0}
 #left-sb{width:var(--left-w);min-width:var(--left-w);border-right:1px solid var(--border)}
 #right-sb{width:var(--right-w);min-width:var(--right-w);border-left:1px solid var(--border)}
-/* Fix 1: !important overrides ID-selector specificity so closed always collapses */
-.sidebar.closed{width:0!important;min-width:0!important;overflow:hidden}
+/* Fix 1: !important beats ID-selector specificity so sidebar actually collapses */
+.sidebar.closed{width:0!important;min-width:0!important;overflow:hidden!important}
 .sb-tabs{display:flex;border-bottom:1px solid var(--border)}
 .sb-tab{flex:1;padding:7px 2px;font-size:9.5px;text-align:center;cursor:pointer;color:var(--text-dim);border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.8px;user-select:none}
 .sb-tab.on{color:var(--accent);border-bottom-color:var(--accent)}
@@ -115,25 +115,24 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--text
 .sb-toggle:hover{background:var(--accent);color:#000;border-color:var(--accent)}
 #lt{border-radius:0 5px 5px 0}#rt{border-radius:5px 0 0 5px}
 
-/* EDITOR ZONE — Fix 2: neutral bg so no dark void below the page */
+/* EDITOR ZONE — Fix 2: warm neutral bg so no dark void shows below the page */
 #ed-wrap{
   flex:1;overflow-y:auto;overflow-x:hidden;
-  background:#2a2a2a;  /* dark mode: dark grey, not pitch black */
+  background:#2c2c2c;
   transition:background .25s;display:flex;justify-content:center;
-  padding:40px 24px 120px;scroll-behavior:smooth;
+  padding:36px 24px 100px;scroll-behavior:smooth;
 }
-.light #ed-wrap{ background:#c8c8c6; }  /* light mode: warm mid-grey */
+.light #ed-wrap{background:#c4c4c2}
 #page-wrap{width:var(--page-w);max-width:100%;display:flex;flex-direction:column;gap:0}
 
 /* ═══════════════════════════
-   PAGE SHELL — A4 proportions, no dark void
+   PAGE SHELL — A4 proportions (794×1123px at 96dpi)
 ═══════════════════════════ */
 .page-shell{
   background:var(--page-bg);width:100%;
-  /* Fix 2: A4 at 96dpi = 794×1123px. min-height ensures a full page always shows */
   min-height:1123px;
   padding:72px 84px 72px 120px;
-  box-shadow:0 4px 28px rgba(0,0,0,.45),0 1px 4px rgba(0,0,0,.2);
+  box-shadow:0 4px 32px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.2);
   transition:background .25s;position:relative;cursor:text;
 }
 /* Page 2, 3… are rendered as separate shells */
@@ -157,20 +156,9 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--text
 .L[data-t="di"]{margin-left:96px;margin-right:96px;margin-bottom:0}
 .L[data-t="tr"]{text-transform:uppercase;text-align:right;margin-top:1.1em;margin-bottom:1.1em}
 .L.revised{background:rgba(100,165,255,.08);border-left:3px solid #64a5ff;padding-left:4px}
-/* Page break visual — cleaner rule between A4 pages */
-.pg-break{
-  width:calc(100% + 204px);margin-left:-120px;
-  border:none;border-top:2px solid #c8c6be;
-  margin-top:28px;margin-bottom:24px;position:relative;
-  background:transparent;
-}
-.pg-break::before{
-  content:'— PAGE ' attr(data-pg) ' —';
-  position:absolute;left:50%;top:-9px;transform:translateX(-50%);
-  font-size:9px;color:#b0afa8;font-family:'Courier Prime',monospace;
-  background:var(--page-bg);padding:0 10px;white-space:nowrap;
-  letter-spacing:1.5px;
-}
+/* Page break visual */
+.pg-break{width:calc(100% + 204px);margin-left:-120px;border:none;border-top:1px dashed #c0bfbb;margin-top:20px;margin-bottom:12px;position:relative}
+.pg-break::after{content:attr(data-pn);position:absolute;right:-60px;top:-9px;font-size:9px;color:#b0afa8;font-family:'Courier Prime',monospace}
 
 /* STATUS BAR */
 #sb{position:fixed;bottom:0;left:0;right:0;height:var(--sb-h);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:14px;z-index:800;font-size:10.5px;color:var(--text-dim);transition:background .25s}
@@ -254,24 +242,25 @@ body.focus #nav{opacity:0;transition:opacity .3s}
 body.focus #nav:hover{opacity:1}
 
 /* ═══════════════════════════
-   FIX 5: TITLE PAGE PRINT ONLY
+   TITLE PAGE — print only
 ═══════════════════════════ */
 #title-page-print{display:none}
 @media print{
-  /* Fix 3: @page removes browser-injected URL header and date/page footer */
-  @page{
-    size:A4;
-    margin:0;   /* zero browser margin = no header/footer chrome */
-  }
-  #nav,#el-bar,#left-sb,#right-sb,#sb,.sb-toggle,#ac,.overlay,#fp,#restore,#splash,#fmt-bar{display:none!important}
+  /* Fix 3: margin:0 on @page removes ALL browser-injected headers and footers */
+  @page{ size:A4; margin:0; }
+
+  #nav,#el-bar,#left-sb,#right-sb,#sb,.sb-toggle,#ac,.overlay,#fp,
+  #restore,#splash,#fmt-bar,#mob-el-bar,#mob-menu,#mob-backdrop,#mob-ham{display:none!important}
+
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  html,body{overflow:visible;height:auto;background:white;margin:0;padding:0}
-  #app{height:auto;padding:0;display:block}
-  #ed-wrap{overflow:visible;padding:0;background:white!important;display:block}
+  html,body{overflow:visible;height:auto;background:white!important;margin:0;padding:0}
+  #app{height:auto;padding:0!important;display:block}
+  #ed-wrap{overflow:visible;padding:0!important;background:white!important;display:block}
   #page-wrap{width:210mm;margin:0 auto}
+
+  /* Page shell provides its own margins since browser margin is 0 */
   .page-shell{
-    box-shadow:none;
-    /* Fix 3: our own margins since browser margin is 0 */
+    box-shadow:none!important;
     padding:25mm 25mm 25mm 38mm;
     min-height:297mm;
     page-break-after:always;
@@ -281,7 +270,8 @@ body.focus #nav:hover{opacity:1}
   .pg-break{display:none}
   .L{color:#000!important}
   .page-num-label{color:#888}
-  /* Fix 5: Show title page before content on print */
+
+  /* Title page — separate first page */
   #title-page-print{
     display:block!important;
     width:210mm;min-height:297mm;
@@ -298,13 +288,180 @@ body.focus #nav:hover{opacity:1}
   #title-page-print .tp-meta{position:absolute;bottom:25mm;left:38mm;font-size:10pt;line-height:1.8}
 }
 
-/* RESPONSIVE */
-@media(max-width:820px){
-  :root{--left-w:0px;--right-w:0px;--page-w:100%}
-  #left-sb,#right-sb,#lt,#rt{display:none}
-  .page-shell{padding:36px 24px 36px 40px}
-  .L[data-t="ch"]{margin-left:80px}.L[data-t="pa"]{margin-left:44px;margin-right:44px}.L[data-t="di"]{margin-left:28px;margin-right:28px}
-  .elb-k{display:none}.elb-item{padding:0 10px;font-size:10px}
+/* ═══════════════════════════════════════
+   MOBILE DRAWER OVERLAY BACKDROP
+═══════════════════════════════════════ */
+#mob-backdrop{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:1100;opacity:0;pointer-events:none;transition:opacity .25s;
+}
+#mob-backdrop.on{display:block;opacity:1;pointer-events:auto}
+
+/* MOBILE MENU DRAWER (slides up from bottom) */
+#mob-menu{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-top:1px solid var(--border);
+  border-radius:16px 16px 0 0;z-index:1300;
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  padding-bottom:env(safe-area-inset-bottom,16px);
+}
+#mob-menu.on{transform:translateY(0)}
+#mob-menu-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 14px;}
+#mob-menu-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 12px 12px;}
+.mob-menu-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:14px 6px;border-radius:10px;cursor:pointer;min-height:66px;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);font-family:'Courier Prime',monospace;font-size:10px;
+  letter-spacing:.3px;transition:all .1s;-webkit-tap-highlight-color:transparent;
+}
+.mob-menu-btn:active{background:var(--accent);color:#000;border-color:var(--accent)}
+.mob-menu-btn.gold{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+.mob-menu-btn .mob-icon{font-size:20px;line-height:1}
+.mob-menu-sep{grid-column:1/-1;height:1px;background:var(--border);margin:2px 0}
+#mob-menu-close{
+  display:block;width:calc(100% - 24px);margin:0 12px 8px;padding:13px;
+  background:transparent;border:1px solid var(--border2);border-radius:8px;
+  color:var(--text-dim);font-size:12px;font-family:'Courier Prime',monospace;
+  cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent;
+}
+
+/* ── HAMBURGER — hidden on desktop ── */
+#mob-ham{ display:none }
+/* ── MOBILE EL BAR — hidden on desktop ── */
+#mob-el-bar{ display:none }
+/* ── SIDEBAR CLOSE BTNS — hidden on desktop ── */
+.sb-close-btn{ display:none }
+
+/* ═══════════════════════════════
+   FULL MOBILE  ≤ 768px
+═══════════════════════════════ */
+@media(max-width:768px){
+  :root{
+    --left-w:0px;--right-w:0px;--page-w:100%;
+    --nav-h:48px;--elb-h:0px;--top-h:48px;--sb-h:0px;
+  }
+
+  /* nav */
+  #nav{ padding:0 12px;gap:8px }
+  .n-group{ display:none!important }
+  #script-title{ font-size:13px }
+
+  /* hamburger */
+  #mob-ham{
+    display:flex!important;align-items:center;justify-content:center;
+    width:38px;height:38px;border-radius:8px;cursor:pointer;flex-shrink:0;
+    background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    font-size:17px;-webkit-tap-highlight-color:transparent;
+  }
+
+  /* element bar top: hidden */
+  #el-bar{ display:none!important }
+
+  /* sidebars become drawers */
+  #left-sb,#right-sb{
+    position:fixed!important;top:0;bottom:0;
+    width:82vw!important;min-width:0!important;max-width:310px;
+    z-index:1200;overflow-y:auto;
+    transition:transform .28s cubic-bezier(.4,0,.2,1)!important;
+  }
+  #left-sb{ left:0;transform:translateX(-105%);border-right:1px solid var(--border) }
+  #right-sb{ right:0;transform:translateX(105%);border-left:1px solid var(--border) }
+  #left-sb.mob-open{ transform:translateX(0) }
+  #right-sb.mob-open{ transform:translateX(0) }
+  /* suppress desktop closed class */
+  #left-sb.closed,#right-sb.closed{ width:82vw!important;min-width:0!important }
+
+  /* sidebar close X */
+  .sb-close-btn{
+    display:flex!important;align-items:center;justify-content:center;
+    position:absolute;top:10px;right:10px;width:30px;height:30px;
+    border-radius:50%;background:var(--surface2);border:1px solid var(--border);
+    color:var(--text-dim);font-size:15px;cursor:pointer;z-index:5;
+    -webkit-tap-highlight-color:transparent;flex-shrink:0;
+  }
+
+  /* hide desktop toggles */
+  #lt,#rt{ display:none!important }
+
+  /* app shell */
+  #app{ padding-top:48px!important;padding-bottom:54px!important }
+
+  /* editor */
+  #ed-wrap{ padding:12px 6px 20px;background:#2c2c2c!important }
+  .light #ed-wrap{ background:#c4c4c2!important }
+
+  /* page */
+  .page-shell{ padding:28px 16px 28px 22px;min-height:60vh }
+  .page-num-label{ top:9px;right:12px;font-size:9px }
+
+  /* line margins scale with viewport */
+  .L{ font-size:11pt;line-height:1.6 }
+  .L[data-t="sh"]{ margin-top:1.3em;margin-bottom:.25em }
+  .L[data-t="ch"]{ margin-left:27vw }
+  .L[data-t="pa"]{ margin-left:14vw;margin-right:12vw }
+  .L[data-t="di"]{ margin-left:8vw;margin-right:6vw }
+
+  /* status bar hidden — element shown in mob-el-bar */
+  #sb{ display:none!important }
+
+  /* bottom element bar */
+  #mob-el-bar{
+    display:flex!important;position:fixed;bottom:0;left:0;right:0;
+    height:54px;background:var(--surface);border-top:1px solid var(--border);
+    z-index:800;overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  #mob-el-bar::-webkit-scrollbar{ display:none }
+  .mob-el-btn{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;min-width:68px;flex:1;padding:5px 3px;cursor:pointer;
+    font-family:'Courier Prime',monospace;font-size:8.5px;color:var(--text-dim);
+    border-right:1px solid var(--border);border-top:2px solid transparent;
+    transition:all .1s;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;letter-spacing:.1px;
+  }
+  .mob-el-btn:last-child{ border-right:none }
+  .mob-el-btn:active,.mob-el-btn.on{
+    color:var(--accent);background:var(--surface2);border-top-color:var(--accent);font-weight:700;
+  }
+  .mob-el-icon{ font-size:13px;line-height:1 }
+
+  /* find: full width */
+  #fp{ left:8px!important;right:8px!important;width:auto!important;top:calc(48px + 8px)!important }
+
+  /* autocomplete: full width */
+  #ac{ left:8px!important;right:8px!important;min-width:0!important;width:calc(100vw - 16px)!important }
+  .ac-item{ padding:11px 14px;font-size:13px }
+
+  /* formatting bar: bigger tap */
+  .fmt-btn{ width:36px;height:34px }
+
+  /* restore banner */
+  #restore{ left:8px!important;right:8px!important;transform:none!important;top:calc(48px + 8px)!important }
+
+  /* modals slide up from bottom */
+  .modal{ padding:20px 16px;border-radius:16px 16px 0 0;max-height:88vh }
+  .overlay{ align-items:flex-end }
+
+  /* splash smaller */
+  #splash .sl{ font-size:52px;letter-spacing:8px }
+  #splash .ss{ font-size:13px }
+
+  /* mobile menu drawer: show */
+  #mob-menu{ display:block }
+
+  /* print from mobile: hide mobile chrome */
+  @media print{
+    #mob-el-bar,#mob-menu,#mob-backdrop,#mob-ham{ display:none!important }
+  }
+}
+
+/* iPhone safe areas */
+@supports(padding: max(0px)){
+  #mob-el-bar{ height:calc(54px + env(safe-area-inset-bottom,0px)) }
+  #app{ padding-bottom:calc(54px + env(safe-area-inset-bottom,0px))!important }
 }
 </style>
 </head>
@@ -342,6 +499,8 @@ body.focus #nav:hover{opacity:1}
     <button class="n-btn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
     <button class="n-btn" onclick="openGuide()">? Guide</button>
   </div>
+  <!-- Mobile hamburger — hidden on desktop via CSS -->
+  <button id="mob-ham" onclick="openMobMenu()">☰</button>
 </nav>
 
 <!-- ELEMENT TYPE BAR — FIX 3: mousedown+preventDefault keeps editor focus -->
@@ -357,6 +516,8 @@ body.focus #nav:hover{opacity:1}
 <!-- APP -->
 <div id="app">
 <aside class="sidebar" id="left-sb">
+  <!-- Mobile close btn -->
+  <button class="sb-close-btn" onclick="closeMobSB('left')">✕</button>
   <div class="sb-tabs">
     <div class="sb-tab on" onclick="sbTab('scenes',this)">SCENES</div>
     <div class="sb-tab" onclick="sbTab('chars',this)">CHARS</div>
@@ -383,7 +544,8 @@ body.focus #nav:hover{opacity:1}
 <button class="sb-toggle" id="rt" onclick="toggleSB('right')">▶</button>
 
 <aside class="sidebar" id="right-sb">
-  <div style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+  <div style="display:flex;flex-direction:column;height:100%;overflow:hidden;position:relative">
+    <button class="sb-close-btn" onclick="closeMobSB('right')">✕</button>
     <div class="doc-hdr"><span>⚕ SCRIPT DOCTOR</span><span class="doc-badge" id="doc-ct">0</span></div>
     <div id="doc-list" style="flex:1;overflow-y:auto;padding:8px"><div class="sb-empty">Your script looks clean.<br>Keep writing!</div></div>
   </div>
@@ -903,15 +1065,7 @@ function onDocClick(e){
 
 /* ─── SIDEBAR TABS ─── */
 function sbTab(name,tab){ document.querySelectorAll('.sb-panel').forEach(p=>p.classList.remove('on')); document.querySelectorAll('.sb-tab').forEach(t=>t.classList.remove('on')); const pn=document.getElementById('pn-'+name); if(pn)pn.classList.add('on'); tab.classList.add('on'); }
-function toggleSB(side){
-  const el=document.getElementById(side==='left'?'left-sb':'right-sb');
-  const btn=document.getElementById(side==='left'?'lt':'rt');
-  el.classList.toggle('closed');
-  const closed=el.classList.contains('closed');
-  if(side==='left') btn.textContent=closed?'▶':'◀';
-  else              btn.textContent=closed?'◀':'▶';
-  syncToggles();
-}
+function toggleSB(side){ const el=document.getElementById(side==='left'?'left-sb':'right-sb'); const btn=document.getElementById(side==='left'?'lt':'rt'); el.classList.toggle('closed'); if(side==='left')btn.textContent=el.classList.contains('closed')?'▶':'◀'; else btn.textContent=el.classList.contains('closed')?'◀':'▶'; syncToggles(); }
 function syncToggles(){ const ls=document.getElementById('left-sb'),rs=document.getElementById('right-sb'),lt=document.getElementById('lt'),rt=document.getElementById('rt'); lt.style.left=( ls.classList.contains('closed')?0:ls.offsetWidth)+'px'; rt.style.right=(rs.classList.contains('closed')?0:rs.offsetWidth)+'px'; }
 
 /* ─── SCHEDULED UPDATE ─── */
@@ -942,15 +1096,16 @@ function updateStats(){
   document.getElementById('wd-ct').textContent=wds+' w';
 }
 
-/* ─── PAGE BREAKS — visual A4 page dividers ─── */
+/* ─── FIX 1: PAGE BREAKS as visual dividers, NO blank phantom page ─── */
 function renderPageBreaks(){
   document.querySelectorAll('.pg-break').forEach(b=>b.remove());
   const ed=document.getElementById('editor'), ls=allLines();
+  // Only insert break lines between real lines — no blank space injected
   for(let i=LPP-1; i<ls.length; i+=LPP){
     if(ls[i]){
       const hr=document.createElement('hr');
       hr.className='pg-break';
-      hr.dataset.pg=String(Math.floor(i/LPP)+2);
+      hr.dataset.pn='Page '+(Math.floor(i/LPP)+2);
       ed.insertBefore(hr,ls[i].nextSibling);
     }
   }
@@ -1139,6 +1294,182 @@ function startTicker(){
 window.addEventListener('beforeunload',autoSave);
 window.addEventListener('resize',syncToggles);
 setTimeout(runUpdate,600);
+</script>
+
+<!-- ═══════════════════════════════════
+     MOBILE: BOTTOM ELEMENT BAR
+═══════════════════════════════════ -->
+<div id="mob-el-bar">
+  <div class="mob-el-btn" id="melb-sh" data-t="sh"><span class="mob-el-icon">🎬</span>Scene</div>
+  <div class="mob-el-btn on" id="melb-ac" data-t="ac"><span class="mob-el-icon">✏️</span>Action</div>
+  <div class="mob-el-btn" id="melb-ch" data-t="ch"><span class="mob-el-icon">👤</span>Char.</div>
+  <div class="mob-el-btn" id="melb-pa" data-t="pa"><span class="mob-el-icon">( )</span>Parenth.</div>
+  <div class="mob-el-btn" id="melb-di" data-t="di"><span class="mob-el-icon">💬</span>Dialogue</div>
+  <div class="mob-el-btn" id="melb-tr" data-t="tr"><span class="mob-el-icon">⟶</span>Transit.</div>
+</div>
+
+<!-- BACKDROP for drawers -->
+<div id="mob-backdrop" onclick="closeAllMobDrawers()"></div>
+
+<!-- MOBILE MENU DRAWER -->
+<div id="mob-menu">
+  <div id="mob-menu-handle"></div>
+  <div id="mob-menu-grid">
+    <div class="mob-menu-btn" onclick="openMobSB('left');closeMobMenu()"><span class="mob-icon">📋</span>Scenes</div>
+    <div class="mob-menu-btn" onclick="openMobSB('right');closeMobMenu()"><span class="mob-icon">⚕</span>Doctor</div>
+    <div class="mob-menu-btn" onclick="openFind();closeMobMenu()"><span class="mob-icon">🔍</span>Find</div>
+    <div class="mob-menu-sep"></div>
+    <div class="mob-menu-btn" onclick="openTitleModal();closeMobMenu()"><span class="mob-icon">📄</span>Title Pg</div>
+    <div class="mob-menu-btn" id="mob-rev-btn" onclick="toggleRevision();closeMobMenu()"><span class="mob-icon">🔵</span>Revision</div>
+    <div class="mob-menu-btn" id="mob-foc-btn" onclick="toggleFocus();closeMobMenu()"><span class="mob-icon">👁</span>Focus</div>
+    <div class="mob-menu-sep"></div>
+    <div class="mob-menu-btn" onclick="saveTxt();closeMobMenu()"><span class="mob-icon">💾</span>Save .txt</div>
+    <div class="mob-menu-btn gold" onclick="printPDF();closeMobMenu()"><span class="mob-icon">🖨</span>PDF</div>
+    <div class="mob-menu-btn" id="mob-theme-btn" onclick="toggleTheme();closeMobMenu()"><span class="mob-icon">☀️</span>Theme</div>
+    <div class="mob-menu-sep"></div>
+    <div class="mob-menu-btn" onclick="openGuide();closeMobMenu()" style="grid-column:1/-1"><span class="mob-icon">❓</span>Format Guide & Shortcuts</div>
+  </div>
+  <button id="mob-menu-close" onclick="closeMobMenu()">Close</button>
+</div>
+
+<script>
+/* ═══════════════════════════
+   MOBILE JS — added on top of existing engine
+═══════════════════════════ */
+const isMobile = () => window.innerWidth <= 768;
+
+/* ── MOBILE MENU ── */
+function openMobMenu(){
+  document.getElementById('mob-menu').classList.add('on');
+  document.getElementById('mob-backdrop').classList.add('on');
+}
+function closeMobMenu(){
+  document.getElementById('mob-menu').classList.remove('on');
+  if(!document.getElementById('left-sb').classList.contains('mob-open') &&
+     !document.getElementById('right-sb').classList.contains('mob-open')){
+    document.getElementById('mob-backdrop').classList.remove('on');
+  }
+}
+
+/* ── MOBILE SIDEBARS ── */
+function openMobSB(side){
+  if(!isMobile()) return;
+  const el = document.getElementById(side==='left' ? 'left-sb' : 'right-sb');
+  el.classList.add('mob-open');
+  document.getElementById('mob-backdrop').classList.add('on');
+}
+function closeMobSB(side){
+  const el = document.getElementById(side==='left' ? 'left-sb' : 'right-sb');
+  el.classList.remove('mob-open');
+  if(!document.getElementById('left-sb').classList.contains('mob-open') &&
+     !document.getElementById('right-sb').classList.contains('mob-open') &&
+     !document.getElementById('mob-menu').classList.contains('on')){
+    document.getElementById('mob-backdrop').classList.remove('on');
+  }
+}
+function closeAllMobDrawers(){
+  document.getElementById('mob-menu').classList.remove('on');
+  document.getElementById('left-sb').classList.remove('mob-open');
+  document.getElementById('right-sb').classList.remove('mob-open');
+  document.getElementById('mob-backdrop').classList.remove('on');
+}
+
+/* ── MOBILE BOTTOM ELEMENT BAR ── */
+function attachMobElBar(){
+  document.querySelectorAll('.mob-el-btn').forEach(btn=>{
+    btn.addEventListener('touchstart', e=>{
+      e.preventDefault();
+      const t = btn.dataset.t;
+      if(t) setType(t);
+      updateMobElBar();
+    }, {passive:false});
+    btn.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      const t = btn.dataset.t;
+      if(t) setType(t);
+      updateMobElBar();
+    });
+  });
+}
+
+function updateMobElBar(){
+  const l = curLine();
+  if(!l) return;
+  const t = l.dataset.t;
+  document.querySelectorAll('.mob-el-btn').forEach(b => b.classList.toggle('on', b.dataset.t===t));
+}
+
+/* ── TOUCH: formatting toolbar on selection ── */
+function initTouchFormatBar(){
+  const ed = document.getElementById('editor');
+  ed.addEventListener('touchend', ()=>{
+    setTimeout(showFmtBar, 80); // slight delay for iOS selection to settle
+  });
+}
+
+/* ── VIRTUAL KEYBOARD: shrink editor area when keyboard opens ── */
+function initVisualViewport(){
+  if(!window.visualViewport) return;
+  window.visualViewport.addEventListener('resize', ()=>{
+    const vv = window.visualViewport;
+    const diff = window.innerHeight - vv.height;
+    const edWrap = document.getElementById('ed-wrap');
+    const mobElBar = document.getElementById('mob-el-bar');
+    if(diff > 100){ // keyboard is open
+      edWrap.style.paddingBottom = '8px';
+      if(mobElBar) mobElBar.style.transform = `translateY(-${diff}px)`;
+    } else {
+      edWrap.style.paddingBottom = '';
+      if(mobElBar) mobElBar.style.transform = '';
+    }
+  });
+}
+
+/* ── SWIPE TO CLOSE DRAWERS ── */
+function initSwipeClose(){
+  let startX = 0, startY = 0;
+  document.addEventListener('touchstart', e=>{
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, {passive:true});
+  document.addEventListener('touchend', e=>{
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = Math.abs(e.changedTouches[0].clientY - startY);
+    if(dy > 60) return; // vertical swipe, ignore
+    const lsb = document.getElementById('left-sb');
+    const rsb = document.getElementById('right-sb');
+    if(dx < -60 && lsb.classList.contains('mob-open')){ closeMobSB('left'); }
+    if(dx > 60  && rsb.classList.contains('mob-open')){ closeMobSB('right'); }
+    // swipe right from left edge opens scenes
+    if(dx > 70 && startX < 24 && isMobile()){ openMobSB('left'); }
+    // swipe left from right edge opens doctor
+    if(dx < -70 && startX > window.innerWidth - 24 && isMobile()){ openMobSB('right'); }
+  }, {passive:true});
+}
+
+/* ── MOBILE BOOT ── */
+window.addEventListener('DOMContentLoaded', ()=>{
+  attachMobElBar();
+  initTouchFormatBar();
+  initVisualViewport();
+  initSwipeClose();
+  // Patch updateStatus to also refresh mob el bar
+  const origUS = window.updateStatus;
+  window.updateStatus = function(){
+    origUS && origUS();
+    if(isMobile()) updateMobElBar();
+  };
+  // Sync mobile theme button label
+  const mobThemeIcon = document.querySelector('#mob-theme-btn .mob-icon');
+  if(mobThemeIcon) mobThemeIcon.textContent = isDark ? '☀️' : '🌙';
+  // Patch toggleTheme to sync mobile icon
+  const origTT = window.toggleTheme;
+  window.toggleTheme = function(){
+    origTT && origTT();
+    const icon = document.querySelector('#mob-theme-btn .mob-icon');
+    if(icon) icon.textContent = isDark ? '☀️' : '🌙';
+  };
+}, {once:true});
 </script>
 </body>
 </html>
