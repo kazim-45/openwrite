@@ -16,7 +16,7 @@ Built as a real alternative to WriterDuet and Celtx for writers who want profess
 
 ## Demo
 
-> Download `FADE_IN.html` → open in any browser → write your screenplay.
+> Download `fade-in-web.html` → open in any browser → write your screenplay.
 
 That's it.
 
@@ -164,7 +164,7 @@ The current version is a complete standalone tool. The next phase converts this 
 
 **Option 1 — Just use it:**
 ```
-Download FADE_IN.html → Open in Chrome, Firefox, Safari, or Edge
+Download fade-in-web.html → Open in Chrome, Firefox, Safari, or Edge
 ```
 
 **Option 2 — Clone and host:**
