@@ -1,20 +1,20 @@
-# FADE IN
+# OpenWrite
 
 **Professional screenwriting software. Free. Open source. Runs in your browser.**
 
-[![Live Demo](https://img.shields.io/badge/live%20demo-fade--in--script--writer.vercel.app-c9a84c?style=flat-square)](https://fade-in-script-writer.vercel.app)
+[![Live Demo](https://img.shields.io/badge/live%20demo-openwrite.vercel.app-c9a84c?style=flat-square)](https://openwrite.vercel.app)
 [![License](https://img.shields.io/badge/license-MIT-c9a84c?style=flat-square)](LICENSE)
 [![Built With](https://img.shields.io/badge/built%20with-HTML%20%2F%20CSS%20%2F%20JS-c9a84c?style=flat-square)]()
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-c9a84c?style=flat-square)]()
-[![Deployed on Vercel](https://img.shields.io/badge/deployed%20on-Vercel-c9a84c?style=flat-square)](https://vercel.com)
+[![Part of OpenSlate](https://img.shields.io/badge/part%20of-OpenSlate-c9a84c?style=flat-square)]()
 
 ---
 
-FADE IN is a fully-featured, industry-standard screenwriting tool that runs as a single HTML file with zero dependencies, zero installation, and zero cost. Open it in a browser and start writing. It works on desktop, tablet, and mobile.
+OpenWrite is a fully-featured, industry-standard screenwriting tool that runs as a single HTML file. Zero dependencies. Zero installation. Zero cost. Open it in a browser and start writing.
 
-Built as a real alternative to WriterDuet and Celtx — without the paywall.
+Part of the **[OpenSlate](https://github.com/kazim-45)** suite — a free, open-source filmmaking toolkit.
 
-**[→ Open the app](https://fade-in-script-writer.vercel.app)**
+**[→ Open the app](https://openwrite.vercel.app)**
 
 ---
 
@@ -22,30 +22,28 @@ Built as a real alternative to WriterDuet and Celtx — without the paywall.
 
 ### Screenplay Formatting Engine
 
-Every element matches WGA industry-standard format precisely — margins, capitalization, spacing, and indentation are all correct out of the box.
+Every element matches WGA industry-standard format — margins, capitalization, spacing, and indentation are all correct out of the box. The `Enter` key is context-aware throughout. `Tab` cycles element types instantly.
 
-| Element | Behavior |
+| Element | Format |
 |---|---|
-| **Scene Heading** | All-caps, bold. Auto-detected when typing `INT.` or `EXT.` |
-| **Action** | Full width, mixed case. Default element |
-| **Character** | All-caps, centered. Auto-suggested from script history |
-| **Parenthetical** | Italicized, auto-wrapped in parentheses |
-| **Dialogue** | Narrower margins, standard screenplay column |
-| **Transition** | All-caps, right-aligned. Auto-detected (`CUT TO:`, etc.) |
-
-The `Enter` key is context-aware: Character → Dialogue, Scene Heading → Action, Transition → Scene Heading, and so on. `Tab` cycles through element types instantly.
+| **Scene Heading** | ALL-CAPS, bold. Auto-detected on `INT.` / `EXT.` |
+| **Action** | Full width, mixed case |
+| **Character** | ALL-CAPS, centered column |
+| **Parenthetical** | Italic, auto-wrapped in parentheses |
+| **Dialogue** | Standard screenplay column margins |
+| **Transition** | ALL-CAPS, right-aligned. Auto-detected |
 
 ---
 
 ### Smart Autocomplete
 
-Suggestions appear as you type — no manual trigger required.
+Suggestions appear as you type — no trigger required.
 
-- Type `I` in a scene heading → suggests `INT.`, `INT./EXT.`, `I/E`
-- Type `E` → suggests `EXT.`
-- After `INT. LOCATION` + ` - ` → suggests `DAY`, `NIGHT`, `CONTINUOUS`, `LATER`, and more
-- In a Character element → suggests every name already used in the script
-- In a Transition element → suggests the full standard list (`CUT TO:`, `FADE OUT.`, `SMASH CUT TO:`, etc.)
+- Type `I` in a scene heading → `INT.`, `INT./EXT.`, `I/E`
+- Type `E` → `EXT.`
+- After `INT. LOCATION -` → `DAY`, `NIGHT`, `CONTINUOUS`, `LATER`, and more
+- In a Character element → every name used in the script so far
+- In a Transition element → `CUT TO:`, `FADE OUT.`, `SMASH CUT TO:`, full standard list
 
 Navigate with arrow keys. Confirm with `Tab`, `Enter`, or click.
 
@@ -53,94 +51,93 @@ Navigate with arrow keys. Confirm with `Tab`, `Enter`, or click.
 
 ### Script Doctor
 
-A real-time analysis panel that monitors your script as you write and flags professional issues without interrupting your flow. Click any issue to jump the cursor directly to the offending line.
+Real-time analysis panel. Flags professional issues as you write without interrupting your flow. Click any issue to jump directly to the line.
 
-| Issue | What it checks |
+| Flag | Rule |
 |---|---|
 | Missing `FADE IN:` | Scripts open with `FADE IN:` |
 | Missing `FADE OUT.` | Scripts close with `FADE OUT.` or `THE END` |
-| Long action block | Action over 4 lines slows pacing |
-| Long monologue | Dialogue over 8 lines loses readers |
-| `"We see"` / `"We hear"` | Describe directly — never address the reader |
+| Long action block | Over 4 lines slows pacing |
+| Long monologue | Over 8 lines loses readers |
+| `"We see"` / `"We hear"` | Describe directly |
 | Scene missing time of day | Every heading needs `DAY`, `NIGHT`, `CONTINUOUS`, etc. |
-| Passive voice | Action lines should use active, vivid verbs |
+| Passive voice | Action lines need active verbs |
 | No scene heading on page 1 | Every location needs a scene heading |
 
 ---
 
 ### Formatting Toolbar
 
-Select any text and a floating toolbar appears above the selection — **Bold**, *Italic*, Underline, Strikethrough, and Clear formatting. Works on any element type. Fully supported on touch screens.
+Select any text and a floating toolbar appears — **Bold**, *Italic*, Underline, Strikethrough, Clear formatting. Works on every element type. Touch-screen supported.
 
 ---
 
 ### Page System
 
-- A4-proportioned page shell so the page always looks like a real sheet of paper
-- Pages grow naturally as you write — no blank white space below your cursor
-- Dashed page-break rulers with page numbers appear every 55 lines
-- Live page count, word count, and scene count update in the navbar
+- A4-proportioned page shell — always looks like a real sheet of paper
+- Pages grow naturally as you write
+- Page-break rulers appear every 55 lines with page numbers
+- Live page count, word count, and scene count in the navbar
 
 ---
 
 ### Sidebars
 
-**Left — three tabs:**
-- **Scenes** — live list of every scene heading; click any to jump directly to it
-- **Characters** — auto-populated from every Character element in the script
-- **Notes** — freeform scratchpad that saves alongside your script
+**Left sidebar:**
+- **Scenes** — live list of every scene heading; click to jump
+- **Characters** — auto-populated from every Character element
+- **Notes** — freeform scratchpad, saves with the script
 
-**Right — Script Doctor** with clickable issue cards.
+**Right sidebar — Script Doctor** with clickable issue cards.
 
-Both sidebars collapse on desktop. On mobile they become full-screen slide-over drawers.
+Both collapse on desktop. On mobile they become full-screen slide-over drawers.
 
 ---
 
 ### Export
 
-**PDF** — `Ctrl+P` triggers a fully print-ready layout. All UI chrome is hidden. Browser headers and footers (URL, date, page number) are suppressed entirely via `@page { margin: 0 }`. The page shell provides proper screenplay margins. If a title page is configured, it prints as a separate first page.
+**PDF** — `Ctrl+P` opens a print-ready layout. All UI chrome hidden. Browser headers and footers suppressed via `@page { margin: 0 }`. If a title page is configured it prints as a separate first page with correct screenplay formatting.
 
-**.txt / .fountain** — `Ctrl+S` downloads a plain-text file with proper screenplay indentation and spacing preserved.
+**.txt / .fountain** — `Ctrl+S` downloads a plain-text file with proper screenplay indentation preserved.
 
 ---
 
 ### Title Page
 
-Set via the **Title Pg** button — Title, Author, Based On, Draft, Date, Contact. The title page is stored separately and never shown in the editor. It appears automatically as the first page on every export.
+Configured via the **Title Pg** button — Title, Author, Based On, Draft, Date, Contact. Stored separately from the editor. Never clutters your writing view. Prepended automatically on every export.
 
 ---
 
 ### Persistence
 
 - Autosaves to `localStorage` every 30 seconds
-- On reload, detects a saved script and offers to restore it
-- Live save status in the status bar
+- Detects and offers to restore a saved script on reload
+- Live save status indicator
 
 ---
 
 ### Additional Features
 
-| Feature | Detail |
+| Feature | Shortcut |
 |---|---|
 | Dark / Light mode | `Ctrl+D` |
-| Revision mode | Colors newly added lines in blue — industry standard |
-| Focus mode | Hides all UI, leaves only the page |
-| Find & Replace | Match count, next/previous navigation, replace one or all |
-| Rotating placeholder | First-line placeholder cycles every 3 seconds when empty |
+| Revision mode — new lines highlighted in blue | toolbar |
+| Focus mode — hides all UI, just the page | `Ctrl+Shift+F` |
+| Find & Replace with match count | `Ctrl+F` |
 
 ---
 
 ## Mobile
 
-FADE IN is fully functional on phones and tablets. The layout adapts completely at ≤768px.
+Fully functional on phones and tablets. The layout adapts completely at ≤768px:
 
-- **Navbar** — logo, title, and a hamburger `☰` button only
-- **Bottom element bar** — all six element types as a sticky bar at thumb level
-- **Drawer sidebars** — slide in from screen edges; swipe to dismiss
-- **Hamburger menu** — bottom sheet with every feature: save, PDF, find, title page, revision mode, focus mode, theme, guide
-- **Virtual keyboard handling** — bottom bar stays visible above the keyboard on iOS and Android
-- **Swipe gestures** — swipe in from the left edge for scene navigator; right edge for Script Doctor
-- **Touch formatting toolbar** — appears above text selections on touch screens
+- Navbar shows logo, title, and hamburger `☰` only
+- Bottom element bar — all six element types at thumb level
+- Sidebars become full-screen slide-over drawers; swipe to dismiss
+- Hamburger menu — bottom sheet with every feature
+- Virtual keyboard handling via `visualViewport` API
+- Swipe in from screen edges to open sidebars
+- Touch-aware formatting toolbar
 
 ---
 
@@ -151,7 +148,6 @@ FADE IN is fully functional on phones and tablets. The layout adapts completely 
 | Cycle element type | `Tab` |
 | Smart new line | `Enter` |
 | Confirm autocomplete | `Tab` / `Enter` |
-| Navigate autocomplete | `↑` `↓` |
 | Scene Heading | `Ctrl+1` |
 | Action | `Ctrl+2` |
 | Character | `Ctrl+3` |
@@ -177,7 +173,7 @@ INT. POLICE STATION - INTERROGATION ROOM - NIGHT
 
     A single bulb swings above a metal table. KHALID (30s,
     sharp eyes, exhausted) sits with his hands flat on
-    the surface.
+    the surface. DETECTIVE RAZA (40s) enters.
 
                         DETECTIVE RAZA
                   We found the car.
@@ -207,13 +203,13 @@ INT. POLICE STATION - INTERROGATION ROOM - NIGHT
 
 **Use it instantly:**
 ```
-https://fade-in-script-writer.vercel.app
+https://openwrite.vercel.app
 ```
 
 **Run locally:**
 ```bash
-git clone https://github.com/kazim-45/Fade-in-script-writer.git
-cd Fade-in-script-writer
+git clone git@github.com:kazim-45/openwrite.git
+cd openwrite
 # Open index.html in any browser — no server needed
 ```
 
@@ -225,22 +221,34 @@ Vercel detects index.html automatically. No configuration required.
 
 ---
 
+## OpenSlate Suite
+
+OpenWrite is the first tool in the OpenSlate filmmaking suite.
+
+| Tool | Description | Status |
+|---|---|---|
+| **OpenWrite** | Screenplay editor | ✅ Live |
+| **OpenFrame** | Pre-production suite — storyboard, shot list, call sheet | ✅ Live |
+| **OpenView** | Viewfinder and shot planning tool | 🔜 Coming |
+
+The long-term vision: write your script in OpenWrite, plan your shoot in OpenFrame, frame your shots in OpenView — all connected, all free.
+
+---
+
 ## Roadmap
 
-- [ ] Next.js migration — component architecture
+- [ ] Import script into OpenFrame with one click
 - [ ] Google authentication via NextAuth.js
-- [ ] Cloud saves — Supabase (PostgreSQL) per-user script storage
-- [ ] Script dashboard — list, rename, duplicate, delete
-- [ ] Custom domain — `fadein.app`
-- [ ] Real-time collaboration — Yjs / WebSockets
-- [ ] Version history — named drafts, diff view
-- [ ] React Native mobile app
+- [ ] Cloud saves — Supabase per-user storage
+- [ ] Script dashboard — list, rename, duplicate, version history
+- [ ] Real-time collaboration
+- [ ] Custom domain — `openwrite.app`
 
 ---
 
 ## Contributing
 
-Pull requests are open. If you find a formatting bug — wrong margins, wrong capitalization behavior, incorrect Tab/Enter flow — open an issue with the specific element type and the expected vs. actual behavior. For feature requests, check the roadmap first.
+Pull requests are open. If you find a formatting bug — wrong margins, wrong capitalization behavior, incorrect Tab/Enter flow — open an issue with the specific element type and the expected vs. actual behavior.
 
 ---
 
@@ -252,9 +260,9 @@ MIT — use it, fork it, ship it. Credit appreciated, not required.
 
 ## Author
 
-Built by **Kazim** — 17-year-old developer from Lahore, Pakistan.
+Built by **Kazim** — 17-year-old developer and filmmaker from Lahore, Pakistan.
 
-[GitHub](https://github.com/kazim-45) · [Live App](https://fade-in-script-writer.vercel.app)
+[GitHub](https://github.com/kazim-45) · [OpenWrite](https://openwrite.vercel.app) · [OpenFrame](https://openframe.vercel.app)
 
 ---
 
