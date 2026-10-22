@@ -229,7 +229,7 @@ OpenWrite is the first tool in the OpenSlate filmmaking suite.
 |---|---|---|
 | **OpenWrite** | Screenplay editor | ✅ Live |
 | **OpenFrame** | Pre-production suite — storyboard, shot list, call sheet | ✅ Live |
-| **OpenView** | Viewfinder and shot planning tool | 🔜 Coming |
+| **OpenView** | Viewfinder and shot planning tool | ✅ Live |
 
 The long-term vision: write your script in OpenWrite, plan your shoot in OpenFrame, frame your shots in OpenView — all connected, all free.
 
