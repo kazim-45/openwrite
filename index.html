@@ -126,16 +126,21 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--text
 
 /* PAGE SHELL — A4 proportions (794×1123px at 96dpi) */
 .page-shell{
-  background:var(--page-bg);width:100%;
-  min-height:1123px;
+  width:100%;
+  min-height:1123px; /* grown in whole pages by paginate() */
   padding:72px 84px 72px 120px;
-  box-shadow:0 4px 32px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.2);
-  transition:background .25s;position:relative;cursor:text;
+  position:relative;cursor:text;
 }
-/* Page 2, 3… are rendered as separate shells */
-.page-shell + .page-shell{margin-top:32px}
+/* One paper sheet per page, drawn behind the editor and added automatically
+   by paginate() as the script grows. */
+#sheets{position:absolute;inset:0;pointer-events:none;z-index:0}
+.sheet{position:absolute;left:0;right:0;background:var(--page-bg);box-shadow:0 4px 32px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.2);transition:background .25s;animation:sheetIn .35s ease}
+@keyframes sheetIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .page-num-label{position:absolute;top:32px;right:72px;font-family:'Courier Prime',monospace;font-size:10px;color:#aaa}
-#editor{outline:none;caret-color:var(--page-text)}
+/* Invisible spacer that pushes a line past the bottom margin / gap / top margin onto the next sheet */
+.L.pg-first{margin-top:0!important}
+.pg-gap{display:block;pointer-events:none;user-select:none}
+#editor{outline:none;caret-color:var(--page-text);position:relative;z-index:1}
 
 /* ═══════════════════════════
    SCREENPLAY LINES
@@ -153,9 +158,6 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--text
 .L[data-t="di"]{margin-left:96px;margin-right:96px;margin-bottom:0}
 .L[data-t="tr"]{text-transform:uppercase;text-align:right;margin-top:1.1em;margin-bottom:1.1em}
 .L.revised{background:rgba(100,165,255,.08);border-left:3px solid #64a5ff;padding-left:4px}
-/* Page break visual */
-.pg-break{width:calc(100% + 204px);margin-left:-120px;border:none;border-top:1px dashed #c0bfbb;margin-top:20px;margin-bottom:12px;position:relative}
-.pg-break::after{content:attr(data-pn);position:absolute;right:-60px;top:-9px;font-size:9px;color:#b0afa8;font-family:'Courier Prime',monospace}
 
 /* STATUS BAR */
 #sb{position:fixed;bottom:0;left:0;right:0;height:var(--sb-h);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:14px;z-index:800;font-size:10.5px;color:var(--text-dim);transition:background .25s}
@@ -257,14 +259,13 @@ body.focus #nav:hover{opacity:1}
   .page-shell{
     box-shadow:none!important;
     padding:25mm 25mm 25mm 38mm;
-    min-height:297mm;
+    min-height:297mm!important;
     page-break-after:always;
     background:white!important;
   }
   .page-shell:last-of-type{page-break-after:avoid}
-  .pg-break{display:none}
+  .pg-gap,#sheets{display:none!important}
   .L{color:#000!important}
-  .page-num-label{color:#888}
 
   #title-page-print{
     display:block!important;
@@ -468,7 +469,7 @@ body.focus #nav:hover{opacity:1}
     <!-- FIX 5: Title page hidden div — only shows on print -->
     <div id="title-page-print" style="display:none"></div>
     <div class="page-shell" id="ps">
-      <div class="page-num-label">1.</div>
+      <div id="sheets"></div>
       <div id="editor" contenteditable="true" spellcheck="true" autocorrect="off" autocapitalize="off"></div>
     </div>
   </div>
@@ -627,7 +628,8 @@ let revMode=false, isDark=true, tipIdx=0;
 let fMatches=[], fIdx=0, acItems=[], acIdx=-1;
 let schedTimer=null;
 let chars=new Set(), locs=new Set();
-const LPP=55; // lines per page
+const PAGE_RATIO=1.4142, PAGE_GAP=32; // A4 height/width, px between sheets
+let pageCount=1;
 
 /* ─── TITLE PAGE DATA (FIX 5) ─── */
 let titlePageData = null;
@@ -713,6 +715,8 @@ function makeLine(type, text=''){
 }
 
 function allLines(){ return Array.from(document.getElementById('editor').querySelectorAll('.L')); }
+function prevLine(l){ let p=l.previousElementSibling; while(p&&!p.classList.contains('L')) p=p.previousElementSibling; return p; }
+function nextLine(l){ let n=l.nextElementSibling; while(n&&!n.classList.contains('L')) n=n.nextElementSibling; return n; }
 function lineIndex(l){ return allLines().indexOf(l); }
 
 /* ─── CARET ─── */
@@ -824,16 +828,16 @@ function onKeyDown(e){
   if(e.key==='Backspace' && l){
     const txt = l.textContent;
     if(txt===''){
-      const prev = l.previousElementSibling;
-      if(prev && prev.classList.contains('L')){ e.preventDefault(); e.stopPropagation(); l.remove(); setCaretEnd(prev); refreshFirstLinePh(); sched(); return; }
+      const prev = prevLine(l);
+      if(prev){ e.preventDefault(); e.stopPropagation(); l.remove(); setCaretEnd(prev); refreshFirstLinePh(); sched(); return; }
     } else if(caretAtStart(l)){
-      const prev = l.previousElementSibling;
-      if(prev && prev.classList.contains('L')){ e.preventDefault(); e.stopPropagation(); const pos=prev.textContent.length; prev.textContent+=txt; l.remove(); setCaret(prev,pos); refreshFirstLinePh(); sched(); return; }
+      const prev = prevLine(l);
+      if(prev){ e.preventDefault(); e.stopPropagation(); const pos=prev.textContent.length; prev.textContent+=txt; l.remove(); setCaret(prev,pos); refreshFirstLinePh(); sched(); return; }
     }
   }
   if(e.key==='Delete' && l && caretAtEnd(l)){
-    const next = l.nextElementSibling;
-    if(next && next.classList.contains('L')){ e.preventDefault(); e.stopPropagation(); const pos=l.textContent.length; l.textContent+=next.textContent; next.remove(); setCaret(l,pos); sched(); return; }
+    const next = nextLine(l);
+    if(next){ e.preventDefault(); e.stopPropagation(); const pos=l.textContent.length; l.textContent+=next.textContent; next.remove(); setCaret(l,pos); sched(); return; }
   }
   if(isAcOpen()){
     if(e.key==='ArrowDown'){ e.preventDefault(); moveAc(1); return; }
@@ -1003,7 +1007,10 @@ function syncToggles(){ const ls=document.getElementById('left-sb'),rs=document.
 
 /* ─── SCHEDULED UPDATE ─── */
 function sched(){ clearTimeout(schedTimer); schedTimer=setTimeout(runUpdate,300); }
-function runUpdate(){ updateSidebars(); updateStats(); runDoctor(); renderPageBreaks(); markUnsaved(); }
+function runUpdate(){
+  const typing=document.getElementById('editor').contains(document.activeElement);
+  updateSidebars(); paginate(typing); updateStats(); runDoctor(); markUnsaved();
+}
 
 /* ─── SIDEBARS ─── */
 function updateSidebars(){
@@ -1024,23 +1031,73 @@ function jumpTo(i){ const ls=allLines(); if(ls[i]){ls[i].scrollIntoView({behavio
 function updateStats(){
   const txt=document.getElementById('editor').textContent;
   const wds=txt.trim()?txt.trim().split(/\s+/).length:0;
-  const pgs=Math.max(1,Math.ceil(allLines().length/LPP));
+  const pgs=pageCount;
   document.getElementById('pg-ct').textContent='p. '+pgs;
   document.getElementById('wd-ct').textContent=wds+' w';
 }
 
-/* ─── FIX 1: PAGE BREAKS as visual dividers, NO blank phantom page ─── */
-function renderPageBreaks(){
-  document.querySelectorAll('.pg-break').forEach(b=>b.remove());
-  const ed=document.getElementById('editor'), ls=allLines();
-  // Only insert break lines between real lines — no blank space injected
-  for(let i=LPP-1; i<ls.length; i+=LPP){
-    if(ls[i]){
-      const hr=document.createElement('hr');
-      hr.className='pg-break';
-      hr.dataset.pn='Page '+(Math.floor(i/LPP)+2);
-      ed.insertBefore(hr,ls[i].nextSibling);
+/* ─── AUTOMATIC PAGINATION ───
+   The script stays in one editor, but is laid out onto real A4-proportioned sheets.
+   When a page fills up, the next line that would cross the bottom margin is pushed
+   onto a freshly added sheet. Scene headings, character cues and parentheticals are
+   kept together with the line that follows them. */
+function paginate(follow){
+  const shell=document.getElementById('ps'), ed=document.getElementById('editor'), layer=document.getElementById('sheets');
+  if(!shell||!ed||!layer) return;
+  ed.querySelectorAll('.pg-gap').forEach(g=>g.remove());
+  ed.querySelectorAll('.pg-first').forEach(l=>l.classList.remove('pg-first'));
+
+  const cs=getComputedStyle(shell);
+  const padT=parseFloat(cs.paddingTop), padB=parseFloat(cs.paddingBottom);
+  const pageH=Math.round(shell.clientWidth*PAGE_RATIO);
+  const stride=pageH+PAGE_GAP, contentH=pageH-padT-padB;
+  const start=n=>padT+n*stride;
+  const keepWithNext={sh:1,ch:1,pa:1};
+
+  const ls=allLines();
+  const endOf=l=>l.offsetTop+l.offsetHeight;
+  let page=0, moved=false;
+  for(let i=0;i<ls.length;i++){
+    const l=ls[i];
+    page=Math.max(page,Math.floor((l.offsetTop-padT)/stride));
+    // block that must stay together: this line + following lines it introduces (max 2)
+    let last=l, j=i;
+    while(keepWithNext[last.dataset.t] && ls[j+1] && j-i<2){ j++; last=ls[j]; if(!keepWithNext[last.dataset.t]) break; }
+    while(endOf(last)>start(page)+contentH && l.offsetTop>start(page)+1){
+      const gap=document.createElement('div');
+      gap.className='pg-gap'; gap.contentEditable='false';
+      const target=start(page+1);
+      gap.style.height=Math.max(0,target-l.offsetTop)+'px';
+      ed.insertBefore(gap,l); l.classList.add('pg-first');
+      // margin collapsing can shift things slightly — correct once
+      const off=target-l.offsetTop;
+      if(off) gap.style.height=Math.max(0,parseFloat(gap.style.height)+off)+'px';
+      page++; moved=true;
     }
+  }
+
+  // total pages from the bottom of the last line
+  const lastEnd=ls.length?endOf(ls[ls.length-1]):padT;
+  const total=Math.max(1,page+1,Math.floor((lastEnd-padT-1)/stride)+1);
+  shell.style.minHeight=(total*pageH+(total-1)*PAGE_GAP)+'px';
+
+  // add / remove sheets so there is exactly one per page
+  while(layer.children.length<total){
+    const n=layer.children.length;
+    const sh=document.createElement('div'); sh.className='sheet';
+    sh.innerHTML='<div class="page-num-label">'+(n+1)+'.</div>';
+    layer.appendChild(sh);
+  }
+  while(layer.children.length>total) layer.lastChild.remove();
+  Array.from(layer.children).forEach((sh,n)=>{ sh.style.top=(n*stride)+'px'; sh.style.height=pageH+'px'; });
+
+  const grew=total>pageCount;
+  pageCount=total;
+  const pc=document.getElementById('pg-ct'); if(pc) pc.textContent='p. '+pageCount;
+
+  // keep the caret in view when typing pushes it onto a new page
+  if(follow&&(moved||grew)){
+    const c=curLine(); if(c) c.scrollIntoView({block:'nearest',behavior:'smooth'});
   }
 }
 
@@ -1226,6 +1283,9 @@ function startTicker(){
 
 window.addEventListener('beforeunload',autoSave);
 window.addEventListener('resize',syncToggles);
+let pgResizeT=null;
+window.addEventListener('resize',()=>{ clearTimeout(pgResizeT); pgResizeT=setTimeout(()=>paginate(false),120); });
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>paginate(false));
 setTimeout(runUpdate,600);
 </script>
 
